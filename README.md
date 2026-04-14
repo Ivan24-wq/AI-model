@@ -41,3 +41,5 @@
 - **PyTorch / TensorFlow** Обучение и запуск нейронной сети для классификации изображений
 - **OpenCV / Pillow:** Обработка и подготовка изображений
 - **NumPy / Pandas** работа с данными и датасетом/
+
+## Projec brief: https://docs.google.com/document/d/1fg__M3OouRDHOpImmsRDZpof_K2TxFoq/edit?usp=sharing&ouid=106833048523028845607&rtpof=true&sd=true
