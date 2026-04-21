@@ -6,12 +6,11 @@ from torchvision import datasets, transforms
 from torch import nn, optim
 from torch.utils.data import DataLoader
 
-
 # 1. ПУТЬ К ДАННЫМ
-DATA_PATH = r"C:\Users\games\AI-model\data\processed"
+DATA_PATH = r"/Users/mac/Documents/Group Project/AI-model/data/processed"
 
-DOCS_PATH = r"C:\Users\games\AI-model\docs"
-MODEL_PATH = r"C:\Users\games\AI-model\models"
+DOCS_PATH = r"/Users/mac/Documents/Group Project/AI-model/docs"
+MODEL_PATH = r"/Users/mac/Documents/Group Project/AI-model/models"
 
 os.makedirs(DOCS_PATH, exist_ok=True)
 os.makedirs(MODEL_PATH, exist_ok=True)
