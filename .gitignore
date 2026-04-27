@@ -1,2 +1,11 @@
 venv/
 baseline_resnet18.pth
+
+#Токен
+.env
+
+# Временные файлы
+__pycache__/
+*.pyc
+.vscode/
+.idea/
