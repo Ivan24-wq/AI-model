@@ -19,4 +19,8 @@ router = APIRouter()
 
 @router.get("/")
 def root():
+    return safe_file("index.html")
+
+@router.get("/register.html")
+def register():
     return safe_file("register.html")
