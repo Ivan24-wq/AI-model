@@ -46,3 +46,19 @@ def decode_token(token: str) -> dict:
         raise Exception("Время действия токена истекло!")
     except jwt.InvalidTokenError:
         raise Exception("Невалидный токен!")
+
+
+#Токен для подтверждения пользователя
+def generate_temail_verification(user_id: str, email: str):
+    now = datetime.datetime.now(datetime.timezone.utc)
+    exp = now + datetime.timedelta(minutes = 30)
+    
+    payload = {
+        "user_id": str(user_id),
+        "email": email,
+        "type": "email_verification",
+        "iat": now,
+        "exp": exp.timestamp()
+    }
+    
+    return jwt.encode(payload, SECRET_KEY, algoright = ALGORIGHTM)
