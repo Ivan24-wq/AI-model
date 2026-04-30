@@ -8,7 +8,7 @@ uri = os.getenv("MONGO_URI")
 
 client = MongoClient(uri)
 
-db = client["intelect"]
+db = client["Intelect"]
 collection = db["Users"]
 
 try:

@@ -21,7 +21,7 @@ app.include_router(pages.router)
 app.include_router(auth.router)
 
 #Подключение Бд
-@app.get("connect-mongo")
+@app.get("/connect-mongo")
 def connect_mongo():
     try:
         client.admin.command('ping')

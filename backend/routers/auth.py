@@ -1,22 +1,23 @@
 from fastapi import APIRouter, HTTPException, Cookie, Response
 from models.model import RegistrationUser
 from datetime import datetime, timedelta
-from database import collection
+from routers.database import collection
 from utils.security import hash_password
 from utils.token_utils import generate_temail_verification, decode_token, generate_access_token
 from utils.send_mail import send_email
 from bson import ObjectId
+from fastapi.responses import RedirectResponse
 
 router = APIRouter()
 
 # Регистрация
 @router.post("/register")
-def register(data: RegistrationUser, email: str, password: str):
-    if collection.find_one({"email": email}):
+def register(data: RegistrationUser):
+    if collection.find_one({"email": data.email}):
         raise Exception("Данный пользователь уже зарегистрирован")
     
     
-    hashed = hash_password(password)
+    hashed = hash_password(data.password)
     now = datetime.utcnow()
     expires_at = now + timedelta(minutes=5)
     
@@ -27,7 +28,7 @@ def register(data: RegistrationUser, email: str, password: str):
         "password": hashed,
         "is_verified": False,
         "created_at": now,
-        "expires": expires_at
+        "expires_at": expires_at
     }
     
     result = collection.insert_one(user)
@@ -61,7 +62,7 @@ def verify(token: str, response: Response):
         {"_id": ObjectId(user_id)},
         {
             "$set": {"is_verified": True},
-            "$unset": {"expired_at": ""}
+            "$unset": {"expires_at": ""}
         }
     )
     
@@ -71,6 +72,8 @@ def verify(token: str, response: Response):
         username=user["username"]
         )
     
+    response = RedirectResponse(url="/frontend/chat.html", status_code=302)
+    
     #Созраниение токена в куки
     response.set_cookie(
         key="access_token",
@@ -79,4 +82,4 @@ def verify(token: str, response: Response):
         max_age= 30 * 60,
         samesite="lax"
     )
-    return {"ok": True}
+    return response

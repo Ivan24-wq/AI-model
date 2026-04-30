@@ -14,10 +14,23 @@ if (loginForm) {
 // --- ЛОГИКА СТРАНИЦЫ РЕГИСТРАЦИИ ---
 const regForm = el('register-form');
 if (regForm) {
-    regForm.onsubmit = (e) => {
+    regForm.onsubmit = async (e) => {
         e.preventDefault();
-        alert('Регистрация прошла успешно! Теперь войдите в систему.');
-        window.location.href = 'index.html';
+
+        const data = {
+            username: el('username').value,
+            email: el('email').value,
+            password: el('password').value
+        };
+
+        const res = await fetch('http://127.0.0.1:8000/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        alert('Подтвердите почту!');
     };
 }
 
