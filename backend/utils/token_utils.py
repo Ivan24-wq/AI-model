@@ -40,7 +40,7 @@ def generate_refressh_token(user_id: str, username: str):
 #Декодирование токена
 def decode_token(token: str) -> dict:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=  [ALGORIGHTM])
+        payload = jwt.decode(token, SECRET_KEY, algorithm=ALGORIGHTM)
         return payload
     except jwt.ExpiredSignatureError:
         raise Exception("Время действия токена истекло!")

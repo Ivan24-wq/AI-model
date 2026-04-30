@@ -10,11 +10,17 @@ from_password = os.getenv("PASSWORD")
 from_name = "Тест+"
 
 #Отправка письма
-def send_email(to_email: str, activation_code: str):
+def send_email(to_email: str, token: str):
+    
+    link = f"http://localhost:8000/verify?token={token}"
 
     #Письмо
-    msg = MIMEText(f"Код доступа: {activation_code}", "plain", "utf-8")
-    msg["Subject"] = "Код подтверждения"
+    msg = MIMEText(
+        f"Перейтиде по ссылке: \n{link}",
+        "plain",
+        "utf-8"
+    )
+    msg["Subject"] = "Подтверждение регистрации"
     msg["From"] = f"{from_name} <{from_mail}>"
     msg["To"] = to_email
 

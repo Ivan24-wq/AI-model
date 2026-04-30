@@ -1,5 +1,6 @@
 import torch
 from torchvision import models
+from pydantic import BaseModel, EmailStr
 
 #Класс предобученной нейронной сети
 class ImprovedModel:
@@ -12,3 +13,14 @@ class ImprovedModel:
     def predict(self, x):
         with torch.no_grad():
             return self.model(x)
+
+#Вход пользователя
+class LoginUser(BaseModel):
+    eamil: EmailStr
+    password: str
+
+#Регистрация
+class RegistrationUser(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
