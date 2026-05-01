@@ -4,11 +4,30 @@ const el = (id) => document.getElementById(id);
 // --- ЛОГИКА СТРАНИЦЫ ВХОДА ---
 const loginForm = el('login-form');
 if (loginForm) {
-    loginForm.onsubmit = (e) => {
+    loginForm.onsubmit = async (e) => {
         e.preventDefault();
-        // Здесь можно добавить проверку логина/пароля
-        window.location.href = 'chat.html';
-    };
+
+        const email = document.querySelector('#email').value;
+        const password = document.querySelector('#password').value;
+
+        const res = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
+    const data = await res.json();
+
+    if (res.ok) {
+        window.location.href = '/frontend/chat.html';
+    } else {
+        alert(data.detail || 'Ошибка входа');
+    }
+};
 }
 
 // --- ЛОГИКА СТРАНИЦЫ РЕГИСТРАЦИИ ---

@@ -5,6 +5,7 @@ from routers import pages, auth
 from routers.database import client
 from routers.database import collection
 from pymongo import MongoClient
+from routers.redis_db import redis
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -32,3 +33,12 @@ def connect_mongo():
 @app.on_event("startup")
 async def startup():
     collection.create_index("expires_at", expireAfterSeconds = 0)
+   
+    
+@app.get("/connect-redis")
+def connect_redis():
+    try:
+        redis.ping()
+        print("Redis успешно подключилась!")
+    except Exception as ex:
+        print("Ошибка подключения к Redis: ", ex)

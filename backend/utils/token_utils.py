@@ -40,7 +40,7 @@ def generate_refressh_token(user_id: str, username: str):
 #Декодирование токена
 def decode_token(token: str) -> dict:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithm=ALGORIGHTM)
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORIGHTM])
         return payload
     except jwt.ExpiredSignatureError:
         raise Exception("Время действия токена истекло!")
@@ -61,4 +61,4 @@ def generate_temail_verification(user_id: str, email: str):
         "exp": exp.timestamp()
     }
     
-    return jwt.encode(payload, SECRET_KEY, algoright = ALGORIGHTM)
+    return jwt.encode(payload, SECRET_KEY, algorithm = ALGORIGHTM)

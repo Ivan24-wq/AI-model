@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 #Вход пользователя
 class LoginUser(BaseModel):
-    eamil: EmailStr
+    email: EmailStr
     password: str
 
 #Регистрация

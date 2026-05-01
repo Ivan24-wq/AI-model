@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, Cookie, Response
-from models.model import RegistrationUser
+from fastapi import APIRouter, HTTPException, Response
+from models.model import RegistrationUser, LoginUser
 from datetime import datetime, timedelta
 from routers.database import collection
-from utils.security import hash_password
+from utils.security import hash_password, verify_password
 from utils.token_utils import generate_temail_verification, decode_token, generate_access_token
 from utils.send_mail import send_email
 from bson import ObjectId
@@ -41,7 +41,7 @@ def register(data: RegistrationUser):
 
 
 #Подтверждение регистрации
-@router.post("/verify")
+@router.get("/verify")
 def verify(token: str, response: Response):
     
     try:
@@ -83,3 +83,28 @@ def verify(token: str, response: Response):
         samesite="lax"
     )
     return response
+
+#Вход зарегистрированного пользователя
+@router.post("/login")
+def login(data: LoginUser, response: Response):
+    user = collection.find_one({"email": data.email})
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="Пользователь не зарегистрирован!")
+    
+    if not verify_password(data.password, user["password"]):
+        raise HTTPException(status_code=400, detail="Не верный логин или пароль!")
+    
+    access_token = generate_access_token(
+        user_id=(user["_id"]),
+        username=user["username"]
+    )
+    
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age= 30 * 60,
+        samesite="lax"
+    )
+    return{"message": "Успешный вход"}
