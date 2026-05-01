@@ -1,12 +1,21 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, Cookie
 from models.model import RegistrationUser, LoginUser
 from datetime import datetime, timedelta
 from routers.database import collection
 from utils.security import hash_password, verify_password
-from utils.token_utils import generate_temail_verification, decode_token, generate_access_token
+from utils.token_utils import (
+    generate_temail_verification, 
+    decode_token, 
+    generate_access_token, 
+    generate_refressh_token,
+    SECRET_KEY,
+    ALGORIGHTM
+    )
 from utils.send_mail import send_email
 from bson import ObjectId
 from fastapi.responses import RedirectResponse
+import jwt
+from routers.redis_db import redis
 
 router = APIRouter()
 
@@ -96,8 +105,20 @@ def login(data: LoginUser, response: Response):
         raise HTTPException(status_code=400, detail="Не верный логин или пароль!")
     
     access_token = generate_access_token(
-        user_id=(user["_id"]),
+        user_id=str(user["_id"]),
         username=user["username"]
+    )
+    
+    #Выдача refresh токена
+    refresh_token = generate_refressh_token(
+        user_id=str(user["_id"]),
+        username=user["username"]
+    )
+    
+    redis.set(
+        f"refresh:{user['_id']}",
+        refresh_token,
+        ex = 60 * 60 * 24* 30
     )
     
     response.set_cookie(
@@ -107,4 +128,41 @@ def login(data: LoginUser, response: Response):
         max_age= 30 * 60,
         samesite="lax"
     )
+    
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        max_age= 60 * 60 * 24 * 30,
+        samesite="lax"
+    )
+    
     return{"message": "Успешный вход"}
+
+#Обновление access_token
+@router.post("/refresh")
+def refresh(response: Response, refresh_token: str = Cookie(None)):
+    if not refresh_token:
+        raise HTTPException(status_code=400, detail="refresh_token отсутствует")
+    
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORIGHTM])
+        user_id = payload["user_id"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="refresh_token истёк")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=400, detail="Не валидный токен")
+    
+    stored_token = redis.get(f"refresh:{user_id}")
+    
+    if not stored_token or stored_token.decode("utf-8") != refresh_token:
+        raise HTTPException(status_code=400, detail="Не валидный токен")
+    
+    #Выдача нового токена
+    new_access_token = generate_access_token(user_id, payload["username"])
+    response.set_cookie(
+        "access_token",
+        new_access_token,
+        httponly=True
+    )
+    return {"new_access_token": new_access_token}    
