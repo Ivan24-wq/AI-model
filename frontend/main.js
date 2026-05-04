@@ -127,25 +127,32 @@ if (sendBtn) {
         output.scrollTo({ top: output.scrollHeight, behavior: 'smooth' });
     };
 	
-	const resetForm = el('reset-password-form');
-	if (resetForm) {
-		resetForm.onsubmit = async (e) => {
+	
+	const requestForm = el('reset-request-form');
+	if (requestForm) {
+		requestForm.onsubmit = (e) => {
 			e.preventDefault();
-			
 			const email = el('reset-email').value;
-			const newPassword = el('new-password').value;
-			const confirmPassword = el('confirm-password').value;
+			console.log("Запрос на восстановление для:", email);
+			// Переход на страницу ввода пароля
+			window.location.href = 'reset_confirm.html';[cite: 4]
+		};
+	}
 
-			if (newPassword !== confirmPassword) {
+	const confirmForm = el('reset-confirm-form');
+	if (confirmForm) {
+		confirmForm.onsubmit = (e) => {
+			e.preventDefault();
+			const newPass = el('new-password').value;
+			const confirmPass = el('confirm-password').value;
+
+			if (newPass !== confirmPass) {
 				alert('Пароли не совпадают!');
 				return;
 			}
 
-			console.log("Запрос на смену для:", email);
-			
-			// Здесь можно добавить fetch-запрос к API для смены пароля
-			alert('Пароль успешно изменен!');
-			window.location.href = 'index.html';
+			alert('Пароль успешно обновлен!');
+			window.location.href = 'index.html';[cite: 4]
 		};
 	}
 }
