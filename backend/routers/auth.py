@@ -44,8 +44,9 @@ def register(data: RegistrationUser):
     
     #Токен
     token = generate_temail_verification(str(result.inserted_id), data.email)
+    link = f"http://localhost:8000/verify?token={token}"
     
-    send_email(data.email, token)
+    send_email(data.email, link)
     return{"message": "Подтверждение отправлено!"}
 
 
@@ -172,8 +173,9 @@ def reset(data: ResetPassword):
         str(user["_id"]),
         data.email
     )
+    link = f"http://127.0.0.1:8000/reset_confirm.html?token={token}"
     
-    send_email(data.email, token)
+    send_email(data.email, link)
     
     return{"message": "Письмо для подтверждения отправлено"}
 
@@ -186,11 +188,11 @@ def confirm_password(data: NewPassword):
         raise HTTPException(status_code=400, detail="Не валидный токе")
     
     user_id = payload["user_id"]
-    hash_password = hash(data.new_password)
+    hashed = hash(data.new_password)
     
     collection.update_one(
         {"_id": ObjectId(user_id)},
-        {"$set": {"password": hash_password}}
+        {"$set": {"password": hashed}}
     )
     
     return{"message": "Успешная смена пароля"}
@@ -222,4 +224,23 @@ def refresh(response: Response, refresh_token: str = Cookie(None)):
         new_access_token,
         httponly=True
     )
-    return {"new_access_token": new_access_token}    
+    return {"new_access_token": new_access_token}
+
+#Выход из сайта
+@router.post("/logout")
+def logout(response: Response, refresh_token: str = Cookie(None)):
+    if refresh_token:
+        try:
+            payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORIGHTM])
+            user_id = payload["user_id"]
+
+            # Удаляем refresh токен из Redis
+            redis.delete(f"refresh:{user_id}")
+
+        except Exception:
+            pass 
+
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+
+    return {"message": "Вы вышли из системы"}

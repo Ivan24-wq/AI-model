@@ -7,12 +7,11 @@ load_dotenv()
 
 from_mail = os.getenv("EMAIL")
 from_password = os.getenv("PASSWORD")
-from_name = "Тест+"
+from_name = "Мудрый мухомор"
 
 #Отправка письма
-def send_email(to_email: str, token: str):
+def send_email(to_email: str, link: str):
     
-    link = f"http://localhost:8000/verify?token={token}"
 
     #Письмо
     msg = MIMEText(

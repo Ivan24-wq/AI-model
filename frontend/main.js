@@ -152,6 +152,8 @@ if (requestForm) {
         e.preventDefault();
 
         const email = el('reset-email').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
 
         try {
             const res = await fetch('http://127.0.0.1:8000/reset', {
@@ -164,29 +166,84 @@ if (requestForm) {
 
             const data = await res.json();
 
+            console.log("RESET RESPONSE:", res.status, data);
+
             if (!res.ok) {
-                alert(data.detail || "Ошибка");
+                alert(data.detail || "Ошибка отправки письма");
                 return;
             }
 
-            window.location.href = '/frontend/reset_confirm.html';
+            alert("Письмо отправлено! Проверь почту.");
+
+        
+            window.location.href = `/frontend/reset_confirm.html?token=${data.token || ""}`;
 
         } catch (err) {
-            console.error(err);
+            console.error("RESET ERROR:", err);
             alert("Сервер недоступен");
         }
     };
 }
 
 const confirmForm = el('reset-confirm-form');
+
 if (confirmForm) {
-    confirmForm.onsubmit = (e) => {
+    confirmForm.onsubmit = async (e) => {
         e.preventDefault();
 
         const newPass = el('new-password').value;
         const confirmPass = el('confirm-password').value;
 
-        alert('Пароль успешно обновлен!');
+        if (newPass !== confirmPass) {
+            alert("Пароли не совпадают");
+            return;
+        }
+
+        const res = await fetch('http://127.0.0.1:8000/reset/confirm', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                token: token,
+                new_password: newPass
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.detail || "Ошибка смены пароля");
+            return;
+        }
+
+        alert("Пароль успешно обновлен!");
         window.location.href = '/frontend/index.html';
     };
 }
+
+//ВЫХОД
+const logoutBtn = document.getElementById('logout-btn');
+
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/logout', {
+                method: 'POST',
+                credentials: 'include' 
+            });
+
+            if (!res.ok) {
+                console.warn('Logout failed');
+            }
+
+        } catch (err) {
+            console.error('LOGOUT ERROR:', err);
+        }
+
+        
+        window.location.href = '/frontend/index.html';
+    });
+}   

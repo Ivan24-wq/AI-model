@@ -24,3 +24,7 @@ def root():
 @router.get("/register.html")
 def register():
     return safe_file("register.html")
+
+@router.get("/reset_confirm.html")
+def reset_page():
+    return safe_file("frontend/reset_confirm.html")
