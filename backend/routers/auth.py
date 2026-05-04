@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response, Cookie
-from models.model import RegistrationUser, LoginUser
+from models.model import RegistrationUser, LoginUser, ResetPassword
 from datetime import datetime, timedelta
 from routers.database import collection
 from utils.security import hash_password, verify_password
@@ -138,6 +138,27 @@ def login(data: LoginUser, response: Response):
     )
     
     return{"message": "Успешный вход"}
+
+
+#Сброс пароля
+@router.post("/reset")
+def reset(data: ResetPassword):
+    user = collection.find_one({"email": data.email})
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="Данный пользователь не зарегистрирован!")
+    
+    #Токен(для сброса пароля)
+    token = generate_temail_verification(
+        str(user["_id"]),
+        data.email,
+        token_type = "password_reset"
+    )
+    
+    send_email(data.email, token)
+    
+    return{"message": "Письмо для подтверждения отправлено"}
+    
 
 #Обновление access_token
 @router.post("/refresh")
