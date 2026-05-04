@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response, Cookie
-from models.model import RegistrationUser, LoginUser, ResetPassword
+from models.model import RegistrationUser, LoginUser, ResetPassword, NewPassword
 from datetime import datetime, timedelta
 from routers.database import collection
 from utils.security import hash_password, verify_password
@@ -170,13 +170,30 @@ def reset(data: ResetPassword):
     #Токен(для сброса пароля)
     token = generate_temail_verification(
         str(user["_id"]),
-        data.email,
-        token_type = "password_reset"
+        data.email
     )
     
     send_email(data.email, token)
     
     return{"message": "Письмо для подтверждения отправлено"}
+
+#Новый пароль
+@router.post("/reset/confirm")
+def confirm_password(data: NewPassword):
+    try:
+        payload = decode_token(data.token)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Не валидный токе")
+    
+    user_id = payload["user_id"]
+    hash_password = hash(data.new_password)
+    
+    collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"password": hash_password}}
+    )
+    
+    return{"message": "Успешная смена пароля"}
     
 
 #Обновление access_token

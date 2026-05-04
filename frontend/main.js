@@ -32,6 +32,7 @@ if (loginForm) {
 
 // --- ЛОГИКА СТРАНИЦЫ РЕГИСТРАЦИИ ---
 const regForm = el('register-form');
+
 if (regForm) {
     regForm.onsubmit = async (e) => {
         e.preventDefault();
@@ -42,14 +43,28 @@ if (regForm) {
             password: el('password').value
         };
 
-        const res = await fetch('http://127.0.0.1:8000/register', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
+        try {
+            const res = await fetch('http://127.0.0.1:8000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
 
-        const result = await res.json();
-        alert('Подтвердите почту!');
+            const result = await res.json();
+
+            if (!res.ok) {
+                alert(result.detail || "Ошибка регистрации");
+                return;
+            }
+
+            alert("Подтвердите почту!");
+
+        } catch (err) {
+            console.error("REGISTER ERROR:", err);
+            alert("Сервер недоступен");
+        }
     };
 }
 
@@ -127,32 +142,51 @@ if (sendBtn) {
         output.scrollTo({ top: output.scrollHeight, behavior: 'smooth' });
     };
 	
-	
-	const requestForm = el('reset-request-form');
-	if (requestForm) {
-		requestForm.onsubmit = (e) => {
-			e.preventDefault();
-			const email = el('reset-email').value;
-			console.log("Запрос на восстановление для:", email);
-			// Переход на страницу ввода пароля
-			window.location.href = 'reset_confirm.html';[cite: 4]
-		};
-	}
 
-	const confirmForm = el('reset-confirm-form');
-	if (confirmForm) {
-		confirmForm.onsubmit = (e) => {
-			e.preventDefault();
-			const newPass = el('new-password').value;
-			const confirmPass = el('confirm-password').value;
+}
+// --- ВОССТАНОВЛЕНИЕ ПАРОЛЯ ---
+const requestForm = el('reset-request-form');
 
-			if (newPass !== confirmPass) {
-				alert('Пароли не совпадают!');
-				return;
-			}
+if (requestForm) {
+    requestForm.onsubmit = async (e) => {
+        e.preventDefault();
 
-			alert('Пароль успешно обновлен!');
-			window.location.href = 'index.html';[cite: 4]
-		};
-	}
+        const email = el('reset-email').value;
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/reset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.detail || "Ошибка");
+                return;
+            }
+
+            window.location.href = '/frontend/reset_confirm.html';
+
+        } catch (err) {
+            console.error(err);
+            alert("Сервер недоступен");
+        }
+    };
+}
+
+const confirmForm = el('reset-confirm-form');
+if (confirmForm) {
+    confirmForm.onsubmit = (e) => {
+        e.preventDefault();
+
+        const newPass = el('new-password').value;
+        const confirmPass = el('confirm-password').value;
+
+        alert('Пароль успешно обновлен!');
+        window.location.href = '/frontend/index.html';
+    };
 }
