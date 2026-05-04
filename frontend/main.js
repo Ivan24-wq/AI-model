@@ -22,11 +22,11 @@ if (loginForm) {
         });
     const data = await res.json();
 
-    if (res.ok) {
-        window.location.href = '/frontend/chat.html';
-    } else {
-        alert(data.detail || 'Ошибка входа');
-    }
+	if (res.ok) {
+		window.location.href = '/frontend/chat.html';
+	} else {
+		alert(data.detail || 'Ошибка входа');
+	}
 };
 }
 
@@ -56,6 +56,15 @@ if (regForm) {
 // --- ЛОГИКА ЧАТА (выполнится только на chat.html) ---
 const sendBtn = el('send-btn');
 if (sendBtn) {
+    // Логика разлогина[cite: 1, 3]
+    const logoutBtn = document.querySelector('a[href="index.html"]');
+    if (logoutBtn) {
+        logoutBtn.onclick = () => {
+            localStorage.clear();[cite: 1]
+            sessionStorage.clear();[cite: 1]
+        };
+    }
+
     const input = el('user-input');
     const output = el('output-area');
     const fileInput = el('file-input');
