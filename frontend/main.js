@@ -152,8 +152,7 @@ if (requestForm) {
         e.preventDefault();
 
         const email = el('reset-email').value;
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
+        
 
         try {
             const res = await fetch('http://127.0.0.1:8000/reset', {
@@ -196,6 +195,13 @@ if (confirmForm) {
 
         if (newPass !== confirmPass) {
             alert("Пароли не совпадают");
+            return;
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            alert("Токен отсутствует в ссылке");
             return;
         }
 

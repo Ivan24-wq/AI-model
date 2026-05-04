@@ -185,10 +185,10 @@ def confirm_password(data: NewPassword):
     try:
         payload = decode_token(data.token)
     except Exception:
-        raise HTTPException(status_code=400, detail="Не валидный токе")
+        raise HTTPException(status_code=400, detail="Не валидный токен")
     
     user_id = payload["user_id"]
-    hashed = hash(data.new_password)
+    hashed = hash_password(data.new_password)
     
     collection.update_one(
         {"_id": ObjectId(user_id)},

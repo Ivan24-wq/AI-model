@@ -27,4 +27,4 @@ def register():
 
 @router.get("/reset_confirm.html")
 def reset_page():
-    return safe_file("frontend/reset_confirm.html")
+    return safe_file("reset_confirm.html")
