@@ -96,12 +96,27 @@ def verify(token: str, response: Response):
 #Вход зарегистрированного пользователя
 @router.post("/login")
 def login(data: LoginUser, response: Response):
+    #Логика(5 попыток - бан на 30 мин)
+    key_attempts = f"login_attempts:{data.email}"
+    key_block = f"login_block:{data.email}"
     user = collection.find_one({"email": data.email})
+    
+    #Проверка блокировки
+    if redis.get(key_block):
+        raise HTTPException(status_code=403, detail="Слишком много попыток! Попробуйте через 30 мин")
     
     if not user:
         raise HTTPException(status_code=400, detail="Пользователь не зарегистрирован!")
     
     if not verify_password(data.password, user["password"]):
+        attempts = redis.incr(key_attempts)
+        
+        #Первый раз
+        if attempts == 1:
+            redis.expire(key_attempts, 30 * 60)
+            
+        if attempts >= 5:
+            redis.set(key_block, "1", ex = 60 * 30)
         raise HTTPException(status_code=400, detail="Не верный логин или пароль!")
     
     access_token = generate_access_token(
@@ -136,6 +151,10 @@ def login(data: LoginUser, response: Response):
         max_age= 60 * 60 * 24 * 30,
         samesite="lax"
     )
+    
+    # Сброс попыток
+    redis.delete(key_attempts)
+    redis.delete(key_block)
     
     return{"message": "Успешный вход"}
 
@@ -179,7 +198,7 @@ def refresh(response: Response, refresh_token: str = Cookie(None)):
     if not stored_token or stored_token.decode("utf-8") != refresh_token:
         raise HTTPException(status_code=400, detail="Не валидный токен")
     
-    #Выдача нового токена()
+    #Выдача нового токена
     new_access_token = generate_access_token(user_id, payload["username"])
     response.set_cookie(
         "access_token",
