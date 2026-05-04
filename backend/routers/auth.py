@@ -179,7 +179,7 @@ def refresh(response: Response, refresh_token: str = Cookie(None)):
     if not stored_token or stored_token.decode("utf-8") != refresh_token:
         raise HTTPException(status_code=400, detail="Не валидный токен")
     
-    #Выдача нового токена
+    #Выдача нового токена()
     new_access_token = generate_access_token(user_id, payload["username"])
     response.set_cookie(
         "access_token",
