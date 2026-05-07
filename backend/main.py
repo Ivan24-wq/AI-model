@@ -6,6 +6,7 @@ from routers.database import client
 from routers.database import collection
 from pymongo import MongoClient
 from routers.redis_db import redis
+from routers.predict import router as predict_router
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -20,6 +21,7 @@ app.mount(
 
 app.include_router(pages.router)
 app.include_router(auth.router)
+app.include_router(predict_router)
 
 #Подключение Бд
 @app.get("/connect-mongo")
