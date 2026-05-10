@@ -42,7 +42,7 @@ class ModelService:
 
             confidence, predicted = torch.max(probs, 1)
 
-        classes = ["edible", "poisonous"]
+        classes = ["Съедобный", "Ядовитый"]
 
         return {
             "class": classes[predicted.item()],

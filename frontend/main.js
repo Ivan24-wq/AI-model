@@ -178,8 +178,8 @@ if (sendBtn) {
 
         aiMsg.innerHTML = `
             <div class="bg-gray-700 text-white px-3 py-2 rounded-xl rounded-tl-none max-w-[85%] shadow-lg">
-                <div><b>Класс:</b> ${data.class}</div>
-                <div><b>Confidence:</b> ${(data.confidence * 100).toFixed(2)}%</div>
+                <div><b>Класс:</b> ${data["Класс"]}</div>
+                <div><b>Confidence:</b> ${(data["Вероятность"] * 100).toFixed(2)}%</div>
             </div>
         `;
 
