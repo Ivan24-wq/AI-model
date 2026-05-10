@@ -10,13 +10,14 @@ router = APIRouter()
 @router.post("/predict")
 async def predict(
     file: UploadFile = File(...),
-    model_type: str = Form(...)
+    model_type: str = Form("improved")
 ):
 
     contents = await file.read()
-
-    image = Image.open(io.BytesIO(contents)).convert("RGB")
-
-    result = model_service.predict(image, model_type)
-
+    image = Image.open(
+        io.BytesIO(contents)
+    ).convert("RGB")
+    
+    result = model_service.predict(image)
+    
     return result

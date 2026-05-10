@@ -21,7 +21,7 @@ app.mount(
 
 app.include_router(pages.router)
 app.include_router(auth.router)
-app.include_router(predict_router)
+app.include_router(predict_router, prefix="/api")
 
 #Подключение Бд
 @app.get("/connect-mongo")

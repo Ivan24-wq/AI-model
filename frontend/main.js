@@ -121,29 +121,93 @@ if (sendBtn) {
         });
     };
     // Отправка сообщений
-    sendBtn.onclick = () => {
-        const text = input.value.trim();
-        if (!text) return;
+    sendBtn.onclick = async () => {
 
-        const msg = document.createElement('div');
-        msg.className = 'flex justify-end message-animation w-full';
-        msg.innerHTML = `
+    const text = input.value.trim();
+
+    const files = fileInput.files;
+
+    if (files.length === 0) {
+        alert("Выберите изображение");
+        return;
+    }
+
+    const file = files[0];
+
+    // FormData
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    formData.append("model_type", "baseline");
+
+    try {
+
+        // запрос к FastAPI
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/predict",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await response.json();
+
+        console.log(data);
+
+        // сообщение пользователя
+        const userMsg = document.createElement("div");
+
+        userMsg.className =
+            "flex justify-end message-animation w-full";
+
+        userMsg.innerHTML = `
             <div class="bg-violet-600 text-white px-3 py-2 rounded-xl rounded-tr-none max-w-[85%] shadow-lg">
-                <span class="block text-base leading-tight">${text}</span>
+                <span>${text || "📷 Изображение отправлено"}</span>
             </div>
         `;
-        output.appendChild(msg);
-        
-        // Очистка
-        input.value = '';
-        input.style.height = 'auto';
-        previewList.innerHTML = '';
-        previewContainer.classList.add('hidden');
-        output.scrollTo({ top: output.scrollHeight, behavior: 'smooth' });
-    };
-	
 
-}
+        output.appendChild(userMsg);
+
+        // ответ AI
+        const aiMsg = document.createElement("div");
+
+        aiMsg.className =
+            "flex justify-start message-animation w-full";
+
+        aiMsg.innerHTML = `
+            <div class="bg-gray-700 text-white px-3 py-2 rounded-xl rounded-tl-none max-w-[85%] shadow-lg">
+                <div><b>Класс:</b> ${data.class}</div>
+                <div><b>Confidence:</b> ${(data.confidence * 100).toFixed(2)}%</div>
+            </div>
+        `;
+
+        output.appendChild(aiMsg);
+
+        // очистка
+        input.value = "";
+
+        previewList.innerHTML = "";
+
+        previewContainer.classList.add("hidden");
+
+        fileInput.value = "";
+
+        output.scrollTo({
+            top: output.scrollHeight,
+            behavior: "smooth"
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Ошибка запроса к серверу");
+
+    }
+};
+};
 // --- ВОССТАНОВЛЕНИЕ ПАРОЛЯ ---
 const requestForm = el('reset-request-form');
 
