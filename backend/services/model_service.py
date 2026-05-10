@@ -45,8 +45,8 @@ class ModelService:
         classes = ["Съедобный", "Ядовитый"]
 
         return {
-            "class": classes[predicted.item()],
-            "confidence": float(confidence.item())
+            "Класс": classes[predicted.item()],
+            "Вероятность": float(confidence.item())
         }
 
 model_service = ModelService()

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
-from routers import pages, auth
+from routers import pages, auth, tg_auth
 from routers.database import client
 from routers.database import collection
 from pymongo import MongoClient
@@ -22,6 +22,7 @@ app.mount(
 app.include_router(pages.router)
 app.include_router(auth.router)
 app.include_router(predict_router, prefix="/api")
+app.include_router(tg_auth.router)
 
 #Подключение Бд
 @app.get("/connect-mongo")
