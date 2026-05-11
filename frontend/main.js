@@ -71,6 +71,22 @@ if (regForm) {
 // --- ЛОГИКА ЧАТА (выполнится только на chat.html) ---
 const sendBtn = el('send-btn');
 if (sendBtn) {
+    // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ КНОПОК
+    const bBtn = el('baseline-btn');
+    const tBtn = el('trained-btn');
+
+    if (bBtn && tBtn) {
+        bBtn.onclick = () => {
+            bBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter bg-violet-600 text-white shadow-sm";
+            tBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter text-gray-400 hover:text-white";
+        };
+
+        tBtn.onclick = () => {
+            tBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter bg-violet-600 text-white shadow-sm";
+            bBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter text-gray-400 hover:text-white";
+        };
+    }
+
     const input = el('user-input');
     const output = el('output-area');
     const fileInput = el('file-input');
@@ -207,7 +223,9 @@ if (sendBtn) {
 
     }
 };
+	
 };
+
 // --- ВОССТАНОВЛЕНИЕ ПАРОЛЯ ---
 const requestForm = el('reset-request-form');
 
@@ -317,3 +335,4 @@ if (logoutBtn) {
         window.location.href = '/frontend/index.html';
     });
 }   
+}
