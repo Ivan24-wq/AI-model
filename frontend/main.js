@@ -75,13 +75,20 @@ if (sendBtn) {
     const bBtn = el('baseline-btn');
     const tBtn = el('trained-btn');
 
+    let selectModel = 'baseline';
+
     if (bBtn && tBtn) {
         bBtn.onclick = () => {
+
+            selectModel = 'baseline';
+
             bBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter bg-violet-600 text-white shadow-sm";
             tBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter text-gray-400 hover:text-white";
         };
 
         tBtn.onclick = () => {
+            selectModel = 'trained';
+
             tBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter bg-violet-600 text-white shadow-sm";
             bBtn.className = "text-[9px] px-2 py-1 rounded-md transition-all uppercase tracking-tighter text-gray-400 hover:text-white";
         };
@@ -155,7 +162,7 @@ if (sendBtn) {
 
     formData.append("file", file);
 
-    formData.append("model_type", "baseline");
+    formData.append("model_type", selectModel);
 
     try {
 
@@ -335,4 +342,3 @@ if (logoutBtn) {
         window.location.href = '/frontend/index.html';
     });
 }   
-}

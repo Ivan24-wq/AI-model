@@ -1,8 +1,12 @@
 import logging
 import os
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+    )
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 import httpx
 
 # Токен
@@ -32,6 +36,15 @@ async def start(update: Update, context):
     
     headers = {"X-API-Key": API_KEY}
     
+    keyboard = [
+        [
+            InlineKeyboardButton("Baseline", callback_data="baseline"),
+            InlineKeyboardButton("Обученная модель", callback_data="improved")
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -42,13 +55,38 @@ async def start(update: Update, context):
         print(response.json())
     except Exception as ex:
         print(f"ошибка на стороне сервера! {ex}")
-    
+        
     await update.message.reply_text(
-        "🍄 Привет! Я бот для распознавания грибов Крыма.\n\n"
+        "🍄 Привет! Я бот для распознавания грибов.\n\n"
         "Отправь мне фото гриба, и я скажу, что это за вид и ядовит ли он.\n"
-        "Узнать подробности — /info"
-    )
+        "Узнать подробности — /info\n"
+        "Выбери модель: /model",
+        reply_markup=reply_markup
+        )
 
+#Выбор модельки
+async def choose_model(update: Update, context):
+        
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "BaseLine",
+                callback_data="baseline"
+            ),
+            InlineKeyboardButton(
+                "Обученная модель",
+                callback_data="improved"
+            )
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+        
+    await update.message.reply_text(
+        "🤖 Выберите модель:",
+        reply_markup=reply_markup
+    )
+        
+        
 async def info(update: Update, context):
     info_text = """
 📋 *О проекте «MycoAI»*
@@ -118,7 +156,10 @@ async def handle_photo(update: Update, context):
                 headers=headers,
                 files=files,
                 data = {
-                    "model_type": "improved"
+                    "model_type": context.user_data.get(
+                        "model_type",
+                        "baseline" 
+                    )
                 }
             )
         
@@ -147,6 +188,20 @@ async def handle_photo(update: Update, context):
 
 async def unknown(update: Update, context):
     await update.message.reply_text("❌ Пожалуйста, отправь именно фото гриба. Команды: /start или /info")
+    
+#Хедлеры
+async def button_hendlers(update: Update, context):
+    query = update.callback_query
+    await query.answer()
+    
+    model = query.data
+    
+    context.user_data["model_type"] = model
+    
+    await query.edit_message_text(
+        f"✅ Выбрана модель: {model}\n\n"
+        f"Теперь отправь фото гриба 🍄"
+    )
 
 def main():
     app = Application.builder().token(TOKEN).build()
@@ -154,12 +209,14 @@ def main():
     # Команды
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("info", info))
+    app.add_handler(CommandHandler("model", choose_model))
     
     # Обработка фото
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     
     # Всё остальное (текст, стикеры и т.д.)
-    app.add_handler(MessageHandler(filters.ALL, unknown))
+    app.add_handler(CallbackQueryHandler(button_hendlers))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown))
     
     print("🤖 Бот запущен! Команды: /start, /info")
     print("Ожидаю фотографии грибов...")
