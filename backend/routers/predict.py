@@ -13,6 +13,7 @@ API_KEY = os.getenv("API_KEY")
 @router.post("/predict")
 async def predict(
     file: UploadFile = File(...),
+    model_type: str = Form(default="baseline"),
     x_api_key: str | None = Header(default=None)
 ):
     
@@ -24,6 +25,9 @@ async def predict(
         io.BytesIO(contents)
     ).convert("RGB")
     
-    result = model_service.predict(image)
+    if model_type == "trained":
+        result = model_service.predict(image)
+    else:
+        result = model_service.predict_baseline(image)
     
     return result
