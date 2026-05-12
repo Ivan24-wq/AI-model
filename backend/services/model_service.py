@@ -107,11 +107,20 @@ class ModelService:
             confidence, predicted = torch.max(probs, 1)
 
         classes = ["Съедобный", "Ядовитый"]
-
+        predicted_class = classes[predicted.item()]
+        
         return {
-            "Класс": classes[predicted.item()],
-            "Вероятность": round(float(confidence.item()) * 100, 2)
+            "model": "baseline",
+            "confidence": round(confidence.item() * 100, 2),
+            "mushroom": {
+                "name_ru": predicted_class,
+                "name_latin": predicted_class,
+                "edibility": "Нет данных",
+                "regions": "Нет данных",
+                "season": "Нет данных",
+                "description": "Baseline модель не содержит расширенной информации"
         }
+    }
 
     # IMPROVED
     def predict(self, image: Image.Image):

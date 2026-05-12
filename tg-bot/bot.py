@@ -39,7 +39,7 @@ async def start(update: Update, context):
     keyboard = [
         [
             InlineKeyboardButton("Baseline", callback_data="baseline"),
-            InlineKeyboardButton("Обученная модель", callback_data="improved")
+            InlineKeyboardButton("Обученная модель", callback_data="trained")
         ]
     ]
 
@@ -75,7 +75,7 @@ async def choose_model(update: Update, context):
             ),
             InlineKeyboardButton(
                 "Обученная модель",
-                callback_data="improved"
+                callback_data="trained"
             )
         ]
     ]
@@ -126,6 +126,11 @@ async def handle_photo(update: Update, context):
     logging.info(f"Получено фото от {update.message.from_user.first_name}, файл: {photo_file.file_id}")
     
     try:
+        current_model = context.user_data.get(
+            "model_type",
+            "baseline"
+        )
+        
         # Получаем фото
         photo = update.message.photo[-1]
 
@@ -155,31 +160,28 @@ async def handle_photo(update: Update, context):
                 f"{API_BASE}/api/predict",
                 headers=headers,
                 files=files,
-                data = {
-                    "model_type": context.user_data.get(
-                        "model_type",
-                        "baseline" 
-                    )
+                data={
+                    "model_type": current_model
                 }
             )
         
         result = response.json()
 
-        mushroom_class = result["Класс"]
-        probability = result["Вероятность"]
+        mushroom = result["mushroom"]
+        mushroom_name = mushroom["name_ru"]
+        probability = result["confidence"]
+        edibility = mushroom["edibility"]
+        description = mushroom["description"]
 
-        # Ответ пользователю
-        if mushroom_class == "Ядовитый":
-            status = "⚠️ ЯДОВИТЫЙ!"
-        else:
-            status = "✅ Съедобный"
-
+        # Ответ пользователю            
         reply = (
-            f"🍄 Результат анализа:\n\n"
-            f"{status}\n\n"
-            f"🎯 Вероятность: {probability:.2%}"
+            f"🍄 Результат анализа\n\n"
+            f"🧬 Вид: {mushroom_name}\n"
+            f"📊 Confidence: {probability}%\n"
+            f"⚠️ Съедобность: {edibility}\n\n"
+            f"📝 {description}"
         )
-
+        
         await update.message.reply_text(reply)
     except Exception as ex:
         logging.exception(ex)

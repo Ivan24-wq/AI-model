@@ -25,9 +25,9 @@ async def predict(
         io.BytesIO(contents)
     ).convert("RGB")
     
-    if model_type == "trained":
-        result = model_service.predict(image)
-    else:
+    if model_type == "baseline":
         result = model_service.predict_baseline(image)
+    elif model_type == "trained":
+        result = model_service.predict(image)
     
     return result

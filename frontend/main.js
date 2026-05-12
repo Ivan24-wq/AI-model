@@ -195,15 +195,29 @@ if (sendBtn) {
 
         // ответ AI
         const aiMsg = document.createElement("div");
+        const mushroom = data.mushroom;
 
         aiMsg.className =
             "flex justify-start message-animation w-full";
 
         aiMsg.innerHTML = `
-            <div class="bg-gray-700 text-white px-3 py-2 rounded-xl rounded-tl-none max-w-[85%] shadow-lg">
-                <div><b>Класс:</b> ${data["Класс"]}</div>
-                <div><b>Confidence:</b> ${(data["Вероятность"] * 100).toFixed(2)}%</div>
-            </div>
+        <div class="bg-gray-700 text-white px-3 py-2 rounded-xl rounded-tl-none max-w-[85%] shadow-lg space-y-1">
+
+            <div><b>🍄 Вид:</b> ${mushroom.name_ru}</div>
+
+            <div><b>🧬 Латинское:</b> ${mushroom.name_latin}</div>
+
+            <div><b>📊 confidence:</b> ${data.confidence}%</div>
+
+            <div><b>⚠️ Съедобность:</b> ${mushroom.edibility}</div>
+
+            <div><b>🌍 Регионы:</b> ${mushroom.regions}</div>
+
+            <div><b>📅 Сезон:</b> ${mushroom.season}</div>
+
+            <div><b>📝 Описание:</b> ${mushroom.description}</div>
+
+        </div>
         `;
 
         output.appendChild(aiMsg);
