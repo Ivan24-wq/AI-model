@@ -44,6 +44,12 @@
 - **OpenCV / Pillow:** Обработка и подготовка изображений
 - **NumPy / Pandas** работа с данными и датасетом/
 
+## Превью
+| Страница  | Пример интерфейса             |
+|-----------|-------------------------------|
+| Страница регистрации   | ![Auth Page](photo/1.png)      |
+| Чат | ![Chat](photo/2.png)   |
+
 ## Project brief
 
 https://docs.google.com/document/d/1fg__M3OouRDHOpImmsRDZpof_K2TxFoq/edit?usp=sharing&ouid=106833048523028845607&rtpof=true&sd=true
