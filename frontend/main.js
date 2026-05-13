@@ -23,7 +23,7 @@ if (loginForm) {
     const data = await res.json();
 
     if (res.ok) {
-        window.location.href = '/frontend/chat.html';
+        window.location.href = '/chat.html';
     } else {
         alert(data.detail || 'Ошибка входа');
     }
@@ -44,7 +44,7 @@ if (regForm) {
         };
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/register', {
+            const res = await fetch('/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -168,7 +168,7 @@ if (sendBtn) {
 
         // запрос к FastAPI
         const response = await fetch(
-            "http://127.0.0.1:8000/api/predict",
+            "/api/predict",
             {
                 method: "POST",
                 body: formData
@@ -258,7 +258,7 @@ if (requestForm) {
         
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/reset', {
+            const res = await fetch('/reset', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -278,7 +278,7 @@ if (requestForm) {
             alert("Письмо отправлено! Проверь почту.");
 
         
-            window.location.href = `/frontend/reset_confirm.html?token=${data.token || ""}`;
+            window.location.href = `/reset_confirm.html?token=${data.token || ""}`;
 
         } catch (err) {
             console.error("RESET ERROR:", err);
@@ -308,7 +308,7 @@ if (confirmForm) {
             return;
         }
 
-        const res = await fetch('http://127.0.0.1:8000/reset/confirm', {
+        const res = await fetch('/reset/confirm', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -327,7 +327,7 @@ if (confirmForm) {
         }
 
         alert("Пароль успешно обновлен!");
-        window.location.href = '/frontend/index.html';
+        window.location.href = '/index.html';
     };
 }
 
@@ -339,7 +339,7 @@ if (logoutBtn) {
         e.preventDefault();
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/logout', {
+            const res = await fetch('/logout', {
                 method: 'POST',
                 credentials: 'include' 
             });
@@ -353,6 +353,6 @@ if (logoutBtn) {
         }
 
         
-        window.location.href = '/frontend/index.html';
+        window.location.href = '/index.html';
     });
 }   

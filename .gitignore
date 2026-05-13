@@ -10,4 +10,5 @@ __pycache__/
 *.pyc
 .vscode/
 .idea/
-tests/
+tests/__pycache__/
+*.pyc
