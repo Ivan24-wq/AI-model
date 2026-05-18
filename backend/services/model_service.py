@@ -1,12 +1,18 @@
 import torch
 import json
 import os
+import gdown
 
 from torchvision import models, transforms
 from torch import nn
 from PIL import Image
 
 DEVICE = torch.device("cpu")
+
+BASELINE_URL = "https://drive.google.com/uc?id=1Lh3fxib_-bZULaQZGC6udt1vdrw_2tYj"
+IMPROVED_URL = "https://drive.google.com/uc?id=16jPhclf8yfEOS9NrN-U_VlarE9tKqKQ1"
+
+
 
 BASE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
@@ -36,6 +42,25 @@ MUSHROOM_INFO_PATH = os.path.join(
     "improved_model",
     "mushroom_info.json"
 )
+
+os.makedirs(os.path.dirname(BASELINE_MODEL_PATH), exist_ok=True)
+os.makedirs(os.path.dirname(IMPROVED_MODEL_PATH), exist_ok=True)
+
+if not os.path.exists(BASELINE_MODEL_PATH):
+    print("Скачивание baseline модели...")
+    gdown.download(
+        BASELINE_URL,
+        BASELINE_MODEL_PATH,
+        quiet=False
+    )
+
+if not os.path.exists(IMPROVED_MODEL_PATH):
+    print("Скачивание improved модели...")
+    gdown.download(
+        IMPROVED_URL,
+        IMPROVED_MODEL_PATH,
+        quiet=False
+    )
 
 class ModelService:
 
