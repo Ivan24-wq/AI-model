@@ -1,7 +1,7 @@
 venv/
-*.pth
-baseline_model/
-improved_model/
+
+baseline_resnet18.pth
+resnet50_species_v2.pth
 
 #Токен
 .env
