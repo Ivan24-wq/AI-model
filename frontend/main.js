@@ -23,7 +23,7 @@ if (loginForm) {
     const data = await res.json();
 
     if (res.ok) {
-        window.location.href = '/chat.html';
+        window.location.href = '/frontend/chat.html';
     } else {
         alert(data.detail || 'Ошибка входа');
     }
@@ -44,7 +44,7 @@ if (regForm) {
         };
 
         try {
-            const res = await fetch('/register', {
+            const res = await fetch('http://127.0.0.1:8000/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -168,7 +168,7 @@ if (sendBtn) {
 
         // запрос к FastAPI
         const response = await fetch(
-            "/api/predict",
+            "http://127.0.0.1:8000/api/predict",
             {
                 method: "POST",
                 body: formData
@@ -258,7 +258,7 @@ if (requestForm) {
         
 
         try {
-            const res = await fetch('/reset', {
+            const res = await fetch('http://127.0.0.1:8000/reset', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -278,7 +278,7 @@ if (requestForm) {
             alert("Письмо отправлено! Проверь почту.");
 
         
-            window.location.href = `/reset_confirm.html?token=${data.token || ""}`;
+            window.location.href = `/frontend/reset_confirm.html?token=${data.token || ""}`;
 
         } catch (err) {
             console.error("RESET ERROR:", err);
@@ -308,7 +308,7 @@ if (confirmForm) {
             return;
         }
 
-        const res = await fetch('/reset/confirm', {
+        const res = await fetch('http://127.0.0.1:8000/reset/confirm', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -327,12 +327,12 @@ if (confirmForm) {
         }
 
         alert("Пароль успешно обновлен!");
-        window.location.href = '/index.html';
+        window.location.href = '/frontend/index.html';
     };
 }
 
 //ВЫХОД
-const logoutBtn = document.getElementById('logout-btn');
+const logoutBtn = document.getElementById('http://127.0.0.1:8000/logout-btn');
 
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async (e) => {
@@ -353,6 +353,6 @@ if (logoutBtn) {
         }
 
         
-        window.location.href = '/index.html';
+        window.location.href = '/frontend/index.html';
     });
 }   
