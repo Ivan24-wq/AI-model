@@ -1,4 +1,5 @@
 venv/
+*.pth
 baseline_model/
 improved_model/
 
